@@ -6,11 +6,7 @@ interface MainProps {
 
 class Main extends Component<MainProps> {
   render() {
-    return (
-      <main>
-        {this.props.children}
-      </main>
-    );
+    return <main>{this.props.children}</main>;
   }
 }
 

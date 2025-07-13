@@ -1,0 +1,55 @@
+.resultsSection {
+  padding: 20px;
+  min-height: 400px;
+}
+
+.listCards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+  padding: 20px 0;
+}
+
+.errorMessage {
+  text-align: center;
+  padding: 40px;
+  background-color: #fff5f5;
+  border: 2px solid #fed7d7;
+  border-radius: 8px;
+  margin: 20px;
+}
+
+.errorMessage h3 {
+  color: #e53e3e;
+  margin-bottom: 10px;
+}
+
+.errorMessage p {
+  color: #721c24;
+  margin-bottom: 20px;
+}
+
+.retryButton {
+  background-color: #e53e3e;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.retryButton:hover {
+  background-color: #c53030;
+}
+
+.noResults {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+  font-size: 18px;
+}
+
+.noResults p {
+  margin: 0;
+}

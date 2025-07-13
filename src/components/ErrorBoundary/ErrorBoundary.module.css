@@ -1,0 +1,45 @@
+.errorBoundary {
+  padding: 20px;
+  border: 2px solid #ff6b6b;
+  border-radius: 8px;
+  background-color: #ffe0e0;
+  text-align: center;
+  margin: 20px;
+}
+
+.errorBoundary h2 {
+  color: #d32f2f;
+  margin-bottom: 10px;
+}
+
+.errorBoundary p {
+  color: #666;
+  margin-bottom: 15px;
+}
+
+.retryButton {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.retryButton:hover {
+  background-color: #45a049;
+}
+
+.errorBoundary details {
+  margin-top: 15px;
+  text-align: left;
+}
+
+.errorBoundary pre {
+  background-color: #f5f5f5;
+  padding: 10px;
+  border-radius: 4px;
+  overflow-x: auto;
+  font-size: 12px;
+}
