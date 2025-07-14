@@ -6,12 +6,8 @@ interface HeaderProps {
 }
 
 class Header extends Component<HeaderProps> {
-  componentDidMount() {}
-
-  componentWillUnmount() {}
-
   render() {
-    const { title = 'The Rick and Morty API' } = this.props;
+    const { title } = this.props;
 
     return (
       <header className={styles.header}>

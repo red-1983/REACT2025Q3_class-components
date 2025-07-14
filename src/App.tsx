@@ -20,7 +20,6 @@ class App extends Component<Record<string, never>, AppState> {
   }
 
   handleSearch = (searchTerm: string) => {
-    // При новом поиске сбрасываем на первую страницу
     this.setState({
       searchTerm,
       currentPage: 1,
@@ -31,7 +30,6 @@ class App extends Component<Record<string, never>, AppState> {
     this.setState({ currentPage: page });
   };
 
-  // Функция для тестирования Error Boundary
   throwError = () => {
     throw new Error('Тестовая ошибка для проверки Error Boundary');
   };
@@ -41,37 +39,15 @@ class App extends Component<Record<string, never>, AppState> {
 
     return (
       <ErrorBoundary>
-        <Header title="Rick and Morty Characters" />
+        <Header title="Rick and Morty API" />
         <Main>
-          {/* Верхняя секция с поиском */}
           <SearchCards onSearch={this.handleSearch} />
 
-          {/* Кнопка для тестирования ошибок */}
-          <div
-            style={{
-              textAlign: 'center',
-              padding: '10px',
-              borderBottom: '1px solid #e0e0e0',
-              marginBottom: '20px',
-            }}
-          >
-            <button
-              onClick={this.throwError}
-              style={{
-                backgroundColor: '#ff4444',
-                color: 'white',
-                border: 'none',
-                padding: '8px 16px',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                fontSize: '14px',
-              }}
-            >
+          <div className="error_test">
+            <button onClick={this.throwError} className="error_test">
               Тестировать Error Boundary
             </button>
           </div>
-
-          {/* Нижняя секция с результатами */}
           <ListCards
             searchTerm={searchTerm}
             currentPage={currentPage}

@@ -21,27 +21,25 @@ class SearchCards extends Component<SearchCardsProps, SearchCardsState> {
   }
 
   componentDidMount() {
-    // Если есть сохраненный поисковый запрос, выполняем поиск при загрузке
     if (this.state.searchTerm) {
       this.props.onSearch(this.state.searchTerm);
     } else {
-      // Если поискового запроса нет, загружаем все элементы
       this.props.onSearch('');
     }
   }
 
   handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({ searchTerm: event.target.value });
+    const newSearchTerm = event.target.value;
+    this.setState({ searchTerm: newSearchTerm }, () => {
+      this.props.onSearch(newSearchTerm.trim());
+    });
   };
 
   handleSearch = () => {
-    // Удаляем пробелы в начале и конце
     const trimmedSearchTerm = this.state.searchTerm.trim();
 
-    // Сохраняем поисковый запрос в localStorage
     localStorage.setItem('searchTerm', trimmedSearchTerm);
 
-    // Выполняем поиск
     this.props.onSearch(trimmedSearchTerm);
   };
 
@@ -67,7 +65,7 @@ class SearchCards extends Component<SearchCardsProps, SearchCardsState> {
             title="Поиск персонажей"
             value={searchTerm}
             onChange={this.handleInputChange}
-            onKeyPress={this.handleKeyPress}
+            onKeyDown={this.handleKeyPress}
             className={styles.searchInput}
           />
           <button onClick={this.handleSearch} className={styles.searchButton}>
