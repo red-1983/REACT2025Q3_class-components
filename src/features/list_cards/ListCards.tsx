@@ -65,13 +65,17 @@ class ListCards extends Component<ListCardsProps, ListCardsState> {
     this.setState({ loading: true, error: null });
 
     try {
-      let url = `https://rickandmortyapi.com/api/character?page=${page}`;
+      const baseUrl = 'https://rickandmortyapi.com/api/character';
+      const params = new URLSearchParams({
+        page: page.toString(),
+      });
+      const trimmedSearchTerm = searchTerm.trim();
 
       if (searchTerm.trim()) {
-        url += `&name=${encodeURIComponent(searchTerm.trim())}`;
+        params.append('name', trimmedSearchTerm);
       }
 
-      const response = await fetch(url);
+      const response = await fetch(`${baseUrl}?${params.toString()}`);
 
       if (response.ok) {
         const data: ApiResponse = await response.json();

@@ -23,7 +23,9 @@ class ErrorBoundary extends Component<Props, State> {
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error('ErrorBoundary поймал ошибку:', error, errorInfo);
   }
-
+  handleRetry = () => {
+    this.setState({ hasError: false, error: undefined });
+  };
   render() {
     if (this.state.hasError) {
       return (
@@ -34,10 +36,7 @@ class ErrorBoundary extends Component<Props, State> {
             <summary>Детали ошибки</summary>
             <pre>{this.state.error?.stack}</pre>
           </details>
-          <button
-            onClick={() => this.setState({ hasError: false, error: undefined })}
-            className={styles.retryButton}
-          >
+          <button onClick={this.handleRetry} className={styles.retryButton}>
             Попробовать снова
           </button>
         </div>
