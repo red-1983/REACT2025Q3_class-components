@@ -12,7 +12,7 @@ interface Character {
   status: string;
 }
 
-interface ApiResponse {
+export interface ApiResponse {
   results: Character[];
   info: {
     count: number;

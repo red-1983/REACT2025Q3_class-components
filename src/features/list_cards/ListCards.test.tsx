@@ -1,8 +1,8 @@
 import { render, screen } from '@testing-library/react';
-import ListCards from './ListCards';
+import ListCards, { ApiResponse } from './ListCards';
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 
-const mockApiResponse = {
+const mockApiResponse: ApiResponse = {
   info: {
     count: 2,
     pages: 1,
