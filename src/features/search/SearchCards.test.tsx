@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 
 describe('SearchCards', () => {
-  const mockOnSearch = vi.fn();
+  const mockOnSearch = vi.fn<(serchTerm: string) => void>();
 
   beforeEach(() => {
     localStorage.clear();
@@ -97,6 +97,17 @@ describe('SearchCards', () => {
     await user.clear(input);
     await user.type(input, 'Morty');
     await user.click(searchButton);
+    expect(localStorage.getItem('searchTerm')).toBe('Morty');
+  });
+  it('should trigger search when Enter key is pressed', async () => {
+    const user = userEvent.setup();
+    render(<SearchCards onSearch={mockOnSearch} />);
+    const input = screen.getByPlaceholderText(
+      'Поиск персонажей...'
+    ) as HTMLInputElement;
+    await user.type(input, 'Morty');
+    await user.keyboard('{Enter}');
+    expect(mockOnSearch).toHaveBeenCalledWith('Morty');
     expect(localStorage.getItem('searchTerm')).toBe('Morty');
   });
 });
