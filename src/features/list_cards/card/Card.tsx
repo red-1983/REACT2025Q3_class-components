@@ -1,7 +1,7 @@
 import { Component } from 'react';
 import styles from './Card.module.css';
 
-interface CardProps {
+export interface CardProps {
   name: string;
   url: string;
   description?: string;
