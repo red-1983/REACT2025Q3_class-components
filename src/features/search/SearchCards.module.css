@@ -48,7 +48,7 @@
   background-color: #004085;
 }
 
-.visually-hidden {
+.visuallyHidden {
   position: absolute;
   width: 1px;
   height: 1px;

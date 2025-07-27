@@ -1,17 +1,16 @@
-import { Component } from 'react';
 import Card from './card/Card';
 import Spinner from '../../components/Spinner/Spinner';
 import Pagination from '../../components/Pagination/Pagination';
 import styles from './ListCards.module.css';
+import { useCallback, useEffect, useState } from 'react';
 
-interface Character {
+export interface Character {
   id: number;
   name: string;
-  image: string;
-  species: string;
   status: string;
+  species: string;
+  image: string;
 }
-
 export interface ApiResponse {
   results: Character[];
   info: {
@@ -28,46 +27,23 @@ interface ListCardsProps {
   onPageChange: (page: number) => void;
 }
 
-interface ListCardsState {
-  characters: Character[];
-  loading: boolean;
-  error: string | null;
-  totalPages: number;
-  totalCount: number;
-}
-
-class ListCards extends Component<ListCardsProps, ListCardsState> {
-  constructor(props: ListCardsProps) {
-    super(props);
-    this.state = {
-      characters: [],
-      loading: false,
-      error: null,
-      totalPages: 1,
-      totalCount: 0,
-    };
-  }
-
-  componentDidMount() {
-    this.fetchCharacters(this.props.searchTerm, this.props.currentPage);
-  }
-
-  componentDidUpdate(prevProps: ListCardsProps) {
-    if (
-      prevProps.searchTerm !== this.props.searchTerm ||
-      prevProps.currentPage !== this.props.currentPage
-    ) {
-      this.fetchCharacters(this.props.searchTerm, this.props.currentPage);
-    }
-  }
-
-  fetchCharacters = async (searchTerm: string, page: number = 1) => {
-    this.setState({ loading: true, error: null });
-
+const ListCards = ({
+  searchTerm,
+  currentPage,
+  onPageChange,
+}: ListCardsProps) => {
+  const [characters, setCharacters] = useState<Character[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+  const fetchCharacters = useCallback(async () => {
+    setLoading(true);
+    setError(null);
     try {
       const baseUrl = 'https://rickandmortyapi.com/api/character';
       const params = new URLSearchParams({
-        page: page.toString(),
+        page: currentPage.toString(),
       });
       const trimmedSearchTerm = searchTerm.trim();
 
@@ -76,111 +52,86 @@ class ListCards extends Component<ListCardsProps, ListCardsState> {
       }
 
       const response = await fetch(`${baseUrl}?${params.toString()}`);
-
       if (response.ok) {
         const data: ApiResponse = await response.json();
-        this.setState({
-          characters: data.results || [],
-          loading: false,
-          totalPages: data.info.pages,
-          totalCount: data.info.count,
-        });
+        setCharacters(data.results || []);
+        setTotalPages(data.info.pages);
+        setTotalCount(data.info.count);
       } else if (response.status === 404) {
-        // API возвращает 404 когда нет результатов поиска
-        this.setState({
-          characters: [],
-          loading: false,
-          error: 'Персонажи не найдены. Попробуйте другой поисковый запрос.',
-          totalPages: 1,
-          totalCount: 0,
-        });
+        setCharacters([]);
+        setError('Персонажи не найдены. Попробуйте другой поисковый запрос.');
+        setTotalPages(1);
+        setTotalCount(0);
       } else {
-        this.setState({
-          characters: [],
-          loading: false,
-          error: `Ошибка при загрузке данных: ${response.status} ${response.statusText}`,
-          totalPages: 1,
-          totalCount: 0,
-        });
+        setCharacters([]);
+        setError(
+          `Ошибка при загрузке данных: ${response.status} ${response.statusText}`
+        );
+        setTotalPages(1);
+        setTotalCount(0);
       }
     } catch (error) {
-      this.setState({
-        characters: [],
-        loading: false,
-        error: `Ошибка сети: ${error instanceof Error ? error.message : 'Неизвестная ошибка'}`,
-        totalPages: 1,
-        totalCount: 0,
-      });
-    }
-  };
-
-  handlePageChange = (page: number) => {
-    this.props.onPageChange(page);
-  };
-
-  render() {
-    const { characters, loading, error, totalPages, totalCount } = this.state;
-    const { currentPage } = this.props;
-
-    if (loading) {
-      return <Spinner />;
-    }
-
-    if (error) {
-      return (
-        <div className={styles.errorMessage}>
-          <h3>Ошибка</h3>
-          <p>{error}</p>
-          <button
-            onClick={() =>
-              this.fetchCharacters(
-                this.props.searchTerm,
-                this.props.currentPage
-              )
-            }
-            className={styles.retryButton}
-          >
-            Попробовать снова
-          </button>
-        </div>
+      setCharacters([]);
+      setError(
+        `Ошибка сети: ${error instanceof Error ? error.message : 'Неизвестная ошибка'}`
       );
+      setTotalPages(1);
+      setTotalCount(0);
+    } finally {
+      setLoading(false);
     }
+  }, [currentPage, searchTerm]);
 
+  useEffect(() => {
+    fetchCharacters();
+  }, [fetchCharacters]);
+  if (loading) {
+    return <Spinner />;
+  }
+  if (error) {
     return (
-      <div className={styles.resultsSection}>
-        {characters.length === 0 ? (
-          <div className={styles.noResults}>
-            <p>Персонажи не найдены</p>
-          </div>
-        ) : (
-          <>
-            <div className={styles.resultsInfo}>
-              <p>
-                Найдено {totalCount} персонажей
-                {totalPages > 1 &&
-                  ` (страница ${currentPage} из ${totalPages})`}
-              </p>
-            </div>
-            <div className={styles.listCards}>
-              {characters.map((character) => (
-                <Card
-                  key={character.id}
-                  name={character.name}
-                  url={character.image}
-                  description={`${character.species} - ${character.status}`}
-                />
-              ))}
-            </div>
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={this.handlePageChange}
-            />
-          </>
-        )}
+      <div className={styles.errorMessage}>
+        <h3>Ошибка</h3>
+        <p>{error}</p>
+        <button onClick={fetchCharacters} className={styles.retryButton}>
+          Попробовать снова
+        </button>
       </div>
     );
   }
-}
+  return (
+    <div className={styles.resultsSection}>
+      {characters.length === 0 ? (
+        <div className={styles.noResults}>
+          <p>Персонажи не найдены</p>
+        </div>
+      ) : (
+        <>
+          <div className={styles.resultsInfo}>
+            <p>
+              Найдено {totalCount} персонажей
+              {totalPages > 1 && ` (страница ${currentPage} из ${totalPages})`}
+            </p>
+          </div>
+          <div className={styles.listCards}>
+            {characters.map((character) => (
+              <Card
+                key={character.id}
+                name={character.name}
+                url={character.image}
+                description={`${character.species} - ${character.status}`}
+              />
+            ))}
+          </div>
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={onPageChange}
+          />
+        </>
+      )}
+    </div>
+  );
+};
 
 export default ListCards;

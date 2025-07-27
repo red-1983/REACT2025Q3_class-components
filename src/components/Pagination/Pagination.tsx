@@ -1,4 +1,3 @@
-import { Component } from 'react';
 import styles from './Pagination.module.css';
 
 interface PaginationProps {
@@ -7,27 +6,25 @@ interface PaginationProps {
   onPageChange: (page: number) => void;
 }
 
-class Pagination extends Component<PaginationProps> {
-  handlePrevious = () => {
-    const { currentPage, onPageChange } = this.props;
+const Pagination = ({
+  currentPage,
+  totalPages,
+  onPageChange,
+}: PaginationProps) => {
+  const handlePrevious = () => {
     if (currentPage > 1) {
       onPageChange(currentPage - 1);
     }
   };
-
-  handleNext = () => {
-    const { currentPage, totalPages, onPageChange } = this.props;
+  const handleNext = () => {
     if (currentPage < totalPages) {
       onPageChange(currentPage + 1);
     }
   };
-
-  handlePageClick = (page: number) => {
-    this.props.onPageChange(page);
+  const handlePageClick = (page: number) => {
+    onPageChange(page);
   };
-
-  getVisiblePages = () => {
-    const { currentPage, totalPages } = this.props;
+  const getVisiblePages = () => {
     const visiblePages: number[] = [];
     const maxVisible = 5;
 
@@ -52,74 +49,66 @@ class Pagination extends Component<PaginationProps> {
 
     return visiblePages;
   };
-
-  render() {
-    const { currentPage, totalPages } = this.props;
-
-    if (totalPages <= 1) {
-      return null;
-    }
-
-    const visiblePages = this.getVisiblePages();
-
-    return (
-      <div className={styles.pagination}>
-        <button
-          className={`${styles.pageButton} ${currentPage === 1 ? styles.disabled : ''}`}
-          onClick={this.handlePrevious}
-          disabled={currentPage === 1}
-        >
-          &larr; Предыдущая
-        </button>
-
-        {visiblePages[0] > 1 && (
-          <>
-            <button
-              className={styles.pageButton}
-              onClick={() => this.handlePageClick(1)}
-            >
-              1
-            </button>
-            {visiblePages[0] > 2 && (
-              <span className={styles.ellipsis}>...</span>
-            )}
-          </>
-        )}
-
-        {visiblePages.map((page) => (
-          <button
-            key={page}
-            className={`${styles.pageButton} ${currentPage === page ? styles.active : ''}`}
-            onClick={() => this.handlePageClick(page)}
-          >
-            {page}
-          </button>
-        ))}
-
-        {visiblePages[visiblePages.length - 1] < totalPages && (
-          <>
-            {visiblePages[visiblePages.length - 1] < totalPages - 1 && (
-              <span className={styles.ellipsis}>...</span>
-            )}
-            <button
-              className={styles.pageButton}
-              onClick={() => this.handlePageClick(totalPages)}
-            >
-              {totalPages}
-            </button>
-          </>
-        )}
-
-        <button
-          className={`${styles.pageButton} ${currentPage === totalPages ? styles.disabled : ''}`}
-          onClick={this.handleNext}
-          disabled={currentPage === totalPages}
-        >
-          Следующая &rarr;
-        </button>
-      </div>
-    );
+  if (totalPages <= 1) {
+    return null;
   }
-}
+
+  const visiblePages = getVisiblePages();
+  return (
+    <div className={styles.pagination}>
+      <button
+        className={`${styles.pageButton} ${currentPage === 1 ? styles.disabled : ''}`}
+        onClick={handlePrevious}
+        disabled={currentPage === 1}
+      >
+        &larr; Предыдущая
+      </button>
+
+      {visiblePages[0] > 1 && (
+        <>
+          <button
+            className={styles.pageButton}
+            onClick={() => handlePageClick(1)}
+          >
+            1
+          </button>
+          {visiblePages[0] > 2 && <span className={styles.ellipsis}>...</span>}
+        </>
+      )}
+
+      {visiblePages.map((page) => (
+        <button
+          key={page}
+          className={`${styles.pageButton} ${currentPage === page ? styles.active : ''}`}
+          onClick={() => handlePageClick(page)}
+        >
+          {page}
+        </button>
+      ))}
+
+      {visiblePages[visiblePages.length - 1] < totalPages && (
+        <>
+          {visiblePages[visiblePages.length - 1] < totalPages - 1 && (
+            <span className={styles.ellipsis}>...</span>
+          )}
+          <button
+            className={styles.pageButton}
+            onClick={() => handlePageClick(totalPages)}
+          >
+            {totalPages}
+          </button>
+        </>
+      )}
+
+      <button
+        className={`${styles.pageButton} ${currentPage === totalPages ? styles.disabled : ''}`}
+        onClick={handleNext}
+        disabled={currentPage === totalPages}
+      >
+        Следующая &rarr;
+      </button>
+    </div>
+  );
+};
 
 export default Pagination;

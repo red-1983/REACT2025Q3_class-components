@@ -1,13 +1,11 @@
-import { Component, ReactNode } from 'react';
+import { ReactNode } from 'react';
 
 interface MainProps {
   children?: ReactNode;
 }
 
-class Main extends Component<MainProps> {
-  render() {
-    return <main>{this.props.children}</main>;
-  }
-}
+const Main = ({ children }: MainProps) => {
+  return <main>{children}</main>;
+};
 
 export default Main;
