@@ -10,6 +10,21 @@ vi.mock('./components', () => ({
     <main data-testid="main">{children}</main>
   ),
   Footer: () => <footer data-testid="footer">Footer</footer>,
+  CharactersPage: () => (
+    <div data-testid="characters-page">
+      <div data-testid="search-cards">
+        <button>Search</button>
+      </div>
+      <div data-testid="list-cards">
+        <div data-testid="search-term"></div>
+        <div data-testid="current-page">1</div>
+        <button>Next Page</button>
+      </div>
+      <button>Тестировать Error Boundary</button>
+    </div>
+  ),
+  NotFound: () => <div data-testid="not-found">Not Found</div>,
+  About: () => <div data-testid="about">About</div>,
 }));
 
 vi.mock('./components/ErrorBoundary/ErrorBoundary', () => ({
