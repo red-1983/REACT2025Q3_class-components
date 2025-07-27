@@ -1,0 +1,10 @@
+.aboutContainer {
+  padding: 20px;
+  text-align: left;
+  max-width: 800px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+.aboutContainer a {
+  color: #61dafb;
+}

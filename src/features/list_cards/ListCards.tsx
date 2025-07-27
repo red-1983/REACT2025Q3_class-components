@@ -25,11 +25,13 @@ interface ListCardsProps {
   searchTerm: string;
   currentPage: number;
   onPageChange: (page: number) => void;
+  onCharacterClick: (id: number) => void;
 }
 
 const ListCards = ({
   searchTerm,
   currentPage,
+  onCharacterClick,
   onPageChange,
 }: ListCardsProps) => {
   const [characters, setCharacters] = useState<Character[]>([]);
@@ -120,6 +122,7 @@ const ListCards = ({
                 name={character.name}
                 url={character.image}
                 description={`${character.species} - ${character.status}`}
+                onClick={() => onCharacterClick(character.id)}
               />
             ))}
           </div>

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import styles from './SearchCards.module.css';
 
 interface SearchCardsProps {
@@ -6,21 +6,18 @@ interface SearchCardsProps {
 }
 
 const SearchCards = ({ onSearch }: SearchCardsProps) => {
-  const [searchTerm, setSearchTerm] = useState(
+  const [inputValue, setInputValue] = useState(
     () => localStorage.getItem('searchTerm') || ''
   );
-  useEffect(() => {
-    onSearch(searchTerm.trim());
-  }, [onSearch, searchTerm]);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(event.target.value);
+    setInputValue(event.target.value);
   };
 
   const handleSearchClick = () => {
-    const trimmedSearchTerm = searchTerm.trim();
-
+    const trimmedSearchTerm = inputValue.trim();
     localStorage.setItem('searchTerm', trimmedSearchTerm);
+    onSearch(trimmedSearchTerm);
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -39,7 +36,7 @@ const SearchCards = ({ onSearch }: SearchCardsProps) => {
           id="search-input"
           placeholder="Поиск персонажей..."
           title="Поиск персонажей"
-          value={searchTerm}
+          value={inputValue}
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
           className={styles.searchInput}

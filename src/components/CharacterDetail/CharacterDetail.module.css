@@ -1,0 +1,41 @@
+.detailSection {
+  position: relative;
+  padding: 20px;
+  border-left: 1px solid #444;
+  background-color: #2a2a2a;
+  overflow-y: auto;
+}
+
+.closeButton {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: #aaa;
+  cursor: pointer;
+}
+
+.characterImage {
+  width: 100%;
+  max-width: 200px;
+  border-radius: 50%;
+  margin: 0 auto 20px;
+  display: block;
+}
+
+.detailsList {
+  list-style: none;
+  padding: 0;
+  text-align: left;
+}
+
+.detailsList li {
+  margin-bottom: 10px;
+}
+
+.errorMessage {
+  color: #ff4d4d;
+  text-align: center;
+}
