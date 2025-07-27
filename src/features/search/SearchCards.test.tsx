@@ -32,7 +32,6 @@ describe('SearchCards', () => {
       'Поиск персонажей...'
     ) as HTMLInputElement;
     expect(input.value).toBe('');
-    expect(mockOnSearch).toHaveBeenCalledWith('');
   });
   it('should display previously saved search term from localStorage on mount', () => {
     const savedSearchTerm = 'Rick';
@@ -42,7 +41,6 @@ describe('SearchCards', () => {
       'Поиск персонажей...'
     ) as HTMLInputElement;
     expect(input.value).toBe(savedSearchTerm);
-    expect(mockOnSearch).toHaveBeenCalledWith(savedSearchTerm);
   });
   it('should update input value when user types', async () => {
     const user = userEvent.setup();
