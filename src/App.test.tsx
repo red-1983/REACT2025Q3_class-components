@@ -208,7 +208,7 @@ describe('App Component Integration Tests', () => {
       );
 
       const errorButton = screen.getByRole('button', {
-        name: /тестировать error boundary/i,
+        name: /тестировать ui ошибок/i,
       });
       expect(errorButton).toBeInTheDocument();
     });
