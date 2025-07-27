@@ -1,32 +1,23 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 import App from './App';
 
-vi.mock('./components', () => ({
-  Header: ({ title }: { title: string }) => (
-    <header data-testid="header">{title}</header>
-  ),
-  Main: ({ children }: { children: React.ReactNode }) => (
-    <main data-testid="main">{children}</main>
-  ),
-  Footer: () => <footer data-testid="footer">Footer</footer>,
-  CharactersPage: () => (
-    <div data-testid="characters-page">
-      <div data-testid="search-cards">
-        <button>Search</button>
-      </div>
-      <div data-testid="list-cards">
-        <div data-testid="search-term"></div>
-        <div data-testid="current-page">1</div>
-        <button>Next Page</button>
-      </div>
-      <button>Тестировать Error Boundary</button>
-    </div>
-  ),
-  NotFound: () => <div data-testid="not-found">Not Found</div>,
-  About: () => <div data-testid="about">About</div>,
-}));
+vi.mock('./components', async (importOriginal) => {
+  const actual = (await importOriginal()) as Record<string, unknown>;
+  return {
+    ...actual,
+    Header: ({ title }: { title: string }) => (
+      <header data-testid="header">{title}</header>
+    ),
+    Main: ({ children }: { children: React.ReactNode }) => (
+      <main data-testid="main">{children}</main>
+    ),
+    Footer: () => <footer data-testid="footer">Footer</footer>,
+    NotFound: () => <div data-testid="not-found">Not Found</div>,
+    About: () => <div data-testid="about">About</div>,
+  };
+});
 
 vi.mock('./components/ErrorBoundary/ErrorBoundary', () => ({
   default: ({ children }: { children: React.ReactNode }) => (
@@ -62,6 +53,14 @@ vi.mock('./features/list_cards/ListCards', () => ({
       </div>
     );
   },
+}));
+
+vi.mock('./components/CharacterDetail/CharacterDetail', () => ({
+  default: () => <div data-testid="character-detail">Character Detail</div>,
+}));
+
+vi.mock('./components/ErrorBoundary/ErrorDisplay', () => ({
+  default: () => <div data-testid="error-display">Error Display</div>,
 }));
 
 describe('App Component Integration Tests', () => {
@@ -116,7 +115,7 @@ describe('App Component Integration Tests', () => {
   });
 
   describe('Search Functionality', () => {
-    it('should update search term when search is performed', () => {
+    it('should update search term when search is performed', async () => {
       render(
         <MemoryRouter>
           <App />
@@ -126,12 +125,14 @@ describe('App Component Integration Tests', () => {
       const searchButton = screen.getByRole('button', { name: /search/i });
       fireEvent.click(searchButton);
 
-      expect(screen.getByTestId('search-term')).toHaveTextContent(
-        'test search'
-      );
+      await waitFor(() => {
+        expect(screen.getByTestId('search-term')).toHaveTextContent(
+          'test search'
+        );
+      });
     });
 
-    it('should reset page to 1 when new search is performed', () => {
+    it('should reset page to 1 when new search is performed', async () => {
       render(
         <MemoryRouter>
           <App />
@@ -140,17 +141,22 @@ describe('App Component Integration Tests', () => {
 
       const nextPageButton = screen.getByRole('button', { name: /next page/i });
       fireEvent.click(nextPageButton);
-      expect(screen.getByTestId('current-page')).toHaveTextContent('2');
+
+      await waitFor(() => {
+        expect(screen.getByTestId('current-page')).toHaveTextContent('2');
+      });
 
       const searchButton = screen.getByRole('button', { name: /search/i });
       fireEvent.click(searchButton);
 
-      expect(screen.getByTestId('current-page')).toHaveTextContent('1');
+      await waitFor(() => {
+        expect(screen.getByTestId('current-page')).toHaveTextContent('1');
+      });
     });
   });
 
   describe('Pagination Functionality', () => {
-    it('should update current page when page change is triggered', () => {
+    it('should update current page when page change is triggered', async () => {
       render(
         <MemoryRouter>
           <App />
@@ -160,10 +166,12 @@ describe('App Component Integration Tests', () => {
       const nextPageButton = screen.getByRole('button', { name: /next page/i });
       fireEvent.click(nextPageButton);
 
-      expect(screen.getByTestId('current-page')).toHaveTextContent('2');
+      await waitFor(() => {
+        expect(screen.getByTestId('current-page')).toHaveTextContent('2');
+      });
     });
 
-    it('should maintain search term when page changes', () => {
+    it('should maintain search term when page changes', async () => {
       render(
         <MemoryRouter>
           <App />
@@ -172,17 +180,22 @@ describe('App Component Integration Tests', () => {
 
       const searchButton = screen.getByRole('button', { name: /search/i });
       fireEvent.click(searchButton);
-      expect(screen.getByTestId('search-term')).toHaveTextContent(
-        'test search'
-      );
+
+      await waitFor(() => {
+        expect(screen.getByTestId('search-term')).toHaveTextContent(
+          'test search'
+        );
+      });
 
       const nextPageButton = screen.getByRole('button', { name: /next page/i });
       fireEvent.click(nextPageButton);
 
-      expect(screen.getByTestId('search-term')).toHaveTextContent(
-        'test search'
-      );
-      expect(screen.getByTestId('current-page')).toHaveTextContent('2');
+      await waitFor(() => {
+        expect(screen.getByTestId('search-term')).toHaveTextContent(
+          'test search'
+        );
+        expect(screen.getByTestId('current-page')).toHaveTextContent('2');
+      });
     });
   });
 
@@ -202,7 +215,7 @@ describe('App Component Integration Tests', () => {
   });
 
   describe('State Management', () => {
-    it('should manage component state correctly', () => {
+    it('should manage component state correctly', async () => {
       render(
         <MemoryRouter>
           <App />
@@ -215,18 +228,22 @@ describe('App Component Integration Tests', () => {
       const searchButton = screen.getByRole('button', { name: /search/i });
       fireEvent.click(searchButton);
 
-      expect(screen.getByTestId('search-term')).toHaveTextContent(
-        'test search'
-      );
-      expect(screen.getByTestId('current-page')).toHaveTextContent('1');
+      await waitFor(() => {
+        expect(screen.getByTestId('search-term')).toHaveTextContent(
+          'test search'
+        );
+        expect(screen.getByTestId('current-page')).toHaveTextContent('1');
+      });
 
       const nextPageButton = screen.getByRole('button', { name: /next page/i });
       fireEvent.click(nextPageButton);
 
-      expect(screen.getByTestId('search-term')).toHaveTextContent(
-        'test search'
-      );
-      expect(screen.getByTestId('current-page')).toHaveTextContent('2');
+      await waitFor(() => {
+        expect(screen.getByTestId('search-term')).toHaveTextContent(
+          'test search'
+        );
+        expect(screen.getByTestId('current-page')).toHaveTextContent('2');
+      });
     });
   });
 });
