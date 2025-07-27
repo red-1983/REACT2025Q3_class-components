@@ -1,5 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { MemoryRouter } from 'react-router-dom';
 import App from './App';
 
 vi.mock('./components', () => ({
@@ -76,7 +77,11 @@ describe('App Component Integration Tests', () => {
 
   describe('Initial Render', () => {
     it('should render all main components on mount', () => {
-      render(<App />);
+      render(
+        <MemoryRouter>
+          <App />
+        </MemoryRouter>
+      );
 
       expect(screen.getByTestId('error-boundary')).toBeInTheDocument();
       expect(screen.getByTestId('header')).toBeInTheDocument();
@@ -87,14 +92,22 @@ describe('App Component Integration Tests', () => {
     });
 
     it('should initialize with empty search term and page 1', () => {
-      render(<App />);
+      render(
+        <MemoryRouter>
+          <App />
+        </MemoryRouter>
+      );
 
       expect(screen.getByTestId('search-term')).toHaveTextContent('');
       expect(screen.getByTestId('current-page')).toHaveTextContent('1');
     });
 
     it('should display correct header title', () => {
-      render(<App />);
+      render(
+        <MemoryRouter>
+          <App />
+        </MemoryRouter>
+      );
 
       expect(screen.getByTestId('header')).toHaveTextContent(
         'Rick and Morty API'
@@ -104,7 +117,11 @@ describe('App Component Integration Tests', () => {
 
   describe('Search Functionality', () => {
     it('should update search term when search is performed', () => {
-      render(<App />);
+      render(
+        <MemoryRouter>
+          <App />
+        </MemoryRouter>
+      );
 
       const searchButton = screen.getByRole('button', { name: /search/i });
       fireEvent.click(searchButton);
@@ -115,7 +132,11 @@ describe('App Component Integration Tests', () => {
     });
 
     it('should reset page to 1 when new search is performed', () => {
-      render(<App />);
+      render(
+        <MemoryRouter>
+          <App />
+        </MemoryRouter>
+      );
 
       const nextPageButton = screen.getByRole('button', { name: /next page/i });
       fireEvent.click(nextPageButton);
@@ -130,7 +151,11 @@ describe('App Component Integration Tests', () => {
 
   describe('Pagination Functionality', () => {
     it('should update current page when page change is triggered', () => {
-      render(<App />);
+      render(
+        <MemoryRouter>
+          <App />
+        </MemoryRouter>
+      );
 
       const nextPageButton = screen.getByRole('button', { name: /next page/i });
       fireEvent.click(nextPageButton);
@@ -139,7 +164,11 @@ describe('App Component Integration Tests', () => {
     });
 
     it('should maintain search term when page changes', () => {
-      render(<App />);
+      render(
+        <MemoryRouter>
+          <App />
+        </MemoryRouter>
+      );
 
       const searchButton = screen.getByRole('button', { name: /search/i });
       fireEvent.click(searchButton);
@@ -159,7 +188,11 @@ describe('App Component Integration Tests', () => {
 
   describe('Error Boundary Testing', () => {
     it('should render error boundary test button', () => {
-      render(<App />);
+      render(
+        <MemoryRouter>
+          <App />
+        </MemoryRouter>
+      );
 
       const errorButton = screen.getByRole('button', {
         name: /тестировать error boundary/i,
@@ -170,7 +203,11 @@ describe('App Component Integration Tests', () => {
 
   describe('State Management', () => {
     it('should manage component state correctly', () => {
-      render(<App />);
+      render(
+        <MemoryRouter>
+          <App />
+        </MemoryRouter>
+      );
 
       expect(screen.getByTestId('search-term')).toHaveTextContent('');
       expect(screen.getByTestId('current-page')).toHaveTextContent('1');
