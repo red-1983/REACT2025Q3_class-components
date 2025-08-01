@@ -63,7 +63,7 @@ const CharactersPage = () => {
           onClick={handleTriggerTestError}
           className={styles.testErrorButton}
         >
-          Тестировать UI Ошибок
+          Кнопка для отображения UI при тестовой ошибке
         </button>
       </div>
       <div className={styles.container}>
@@ -75,6 +75,7 @@ const CharactersPage = () => {
             onCharacterClick={handleCharacterClick}
           />
         </div>
+
         {detailId && (
           <CharacterDetail characterId={detailId} onClose={handleDetailClose} />
         )}

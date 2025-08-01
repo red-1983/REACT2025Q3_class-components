@@ -3,6 +3,7 @@ import Spinner from '../../components/Spinner/Spinner';
 import Pagination from '../../components/Pagination/Pagination';
 import styles from './ListCards.module.css';
 import { useCallback, useEffect, useState } from 'react';
+import { useCharacterSelectionStore } from '../../stores/useCharacterSelectionStore';
 
 export interface Character {
   id: number;
@@ -34,6 +35,9 @@ const ListCards = ({
   onCharacterClick,
   onPageChange,
 }: ListCardsProps) => {
+  const { selectedCharacters, toggleCharacter, clearSelection } =
+    useCharacterSelectionStore();
+
   const [characters, setCharacters] = useState<Character[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -87,6 +91,42 @@ const ListCards = ({
   useEffect(() => {
     fetchCharacters();
   }, [fetchCharacters]);
+
+  const handleSaveCsv = () => {
+    if (selectedCharacters.length === 0) return;
+
+    const escapeCsvField = (field: string | number) => {
+      const str = String(field);
+      if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+        return `"${str.replace(/"/g, '""')}"`;
+      }
+      return str;
+    };
+
+    const headers = ['Name', 'Description', 'Details URL'];
+    const rows = selectedCharacters.map((elem) => {
+      const description = `${elem.species} - ${elem.status}`;
+      const detailsUrl = `https://rickandmortyapi.com/api/character/${elem.id}`;
+      return [
+        escapeCsvField(elem.name),
+        escapeCsvField(description),
+        escapeCsvField(detailsUrl),
+      ].join(',');
+    });
+
+    const csvContent = [headers.join(','), ...rows].join('\n');
+    const blob = new Blob([`\uFEFF${csvContent}`], {
+      type: 'text/csv;charset=utf-8;',
+    });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', `${selectedCharacters.length}_items.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   if (loading) {
     return <Spinner />;
   }
@@ -116,15 +156,22 @@ const ListCards = ({
             </p>
           </div>
           <div className={styles.listCards}>
-            {characters.map((character) => (
-              <Card
-                key={character.id}
-                name={character.name}
-                url={character.image}
-                description={`${character.species} - ${character.status}`}
-                onClick={() => onCharacterClick(character.id)}
-              />
-            ))}
+            {characters.map((character) => {
+              const isSelected = selectedCharacters.some(
+                (c) => c.id === character.id
+              );
+              return (
+                <Card
+                  key={character.id}
+                  name={character.name}
+                  url={character.image}
+                  description={`${character.species} - ${character.status}`}
+                  onClick={() => onCharacterClick(character.id)}
+                  isChecked={isSelected}
+                  onToggle={() => toggleCharacter(character)}
+                />
+              );
+            })}
           </div>
           <Pagination
             currentPage={currentPage}
@@ -132,6 +179,15 @@ const ListCards = ({
             onPageChange={onPageChange}
           />
         </>
+      )}
+      {selectedCharacters.length > 0 && (
+        <div className={styles.selectedCharactersCount}>
+          <p>{`Количество выбранных персонажей: ${selectedCharacters.length}`}</p>
+          <div className={styles.buttonContainer}>
+            <button onClick={clearSelection}>Отменить выбор всех</button>
+            <button onClick={handleSaveCsv}>Сохранить список</button>
+          </div>
+        </div>
       )}
     </div>
   );

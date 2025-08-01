@@ -1,3 +1,14 @@
+:root {
+  --background-color: #ffffff;
+  --text-color: #000;
+  --card-background: #f9f9f9;
+  --header-background: #dcf3c6;
+  --button-background: #dcdcdc;
+  --button-text-color: #000000;
+  --link-color: #646cff;
+  --link-hover-color: #535bf2;
+  --link-active-color: #0b2be0;
+}
 * {
   margin: 0;
   padding: 0;
@@ -14,6 +25,11 @@ a:hover {
 }
 body {
   min-height: 100vh;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  transition:
+    background-color 0.2s,
+    color 0.2s;
 }
 #root {
   min-height: 100vh;
@@ -24,4 +40,16 @@ body {
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
+}
+
+body.dark {
+  --background-color: #242424;
+  --text-color: rgba(255, 255, 255, 0.87);
+  --card-background: #1a1a1a;
+  --header-background: #0f37bdd5;
+  --button-background: #3a3a3a;
+  --button-text-color: #ffffff;
+  --link-color: #747bff;
+  --link-hover-color: #fdff7b;
+  --link-active-color: #ffffff;
 }

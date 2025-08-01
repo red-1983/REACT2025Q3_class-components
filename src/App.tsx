@@ -10,8 +10,13 @@ import {
 
 import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
 import './App.css';
-
+import { useEffect } from 'react';
+import { useUIStore } from './stores/useUIStore';
 const App = () => {
+  const theme = useUIStore((state) => state.theme);
+  useEffect(() => {
+    document.body.className = theme;
+  }, [theme]);
   return (
     <ErrorBoundary>
       <Header title="Rick and Morty API" />

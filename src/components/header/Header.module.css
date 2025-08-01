@@ -3,7 +3,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 1rem 2rem;
-  background-color: #dcf3c6;
+  background-color: var(--header-background);
 }
 
 .logo a {
@@ -22,7 +22,7 @@
 }
 
 .navLink {
-  color: #000000;
+  color: var(--text-color);
   text-decoration: none;
   font-weight: 500;
   margin-left: 25px;
@@ -34,6 +34,6 @@
 }
 
 .active {
-  color: #0b2be0;
-  border-bottom-color: #0b2be0;
+  color: var(--link-active-color);
+  border-bottom-color: var(--link-active-color);
 }
