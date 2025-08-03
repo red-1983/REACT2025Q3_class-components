@@ -3,11 +3,10 @@
   --text-color: #000;
   --card-background: #f9f9f9;
   --header-background: #dcf3c6;
-  --button-background: #dcdcdc;
-  --button-text-color: #000000;
   --link-color: #646cff;
   --link-hover-color: #535bf2;
   --link-active-color: #0b2be0;
+  --background-color-aside: #9fcdd883;
 }
 * {
   margin: 0;
@@ -47,9 +46,8 @@ body.dark {
   --text-color: rgba(255, 255, 255, 0.87);
   --card-background: #1a1a1a;
   --header-background: #0f37bdd5;
-  --button-background: #3a3a3a;
-  --button-text-color: #ffffff;
   --link-color: #747bff;
   --link-hover-color: #fdff7b;
   --link-active-color: #ffffff;
+  --background-color-aside: #cce0e65d;
 }

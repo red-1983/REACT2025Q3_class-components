@@ -26,7 +26,7 @@ const Header = ({ title }: HeaderProps) => {
           О приложении
         </NavLink>
       </nav>
-      <button className={styles.button} onClick={toggleTheme}>
+      <button className={styles.button_theme} onClick={toggleTheme}>
         Тема: {theme === 'light' ? 'Светлая' : 'Темная'}
       </button>
     </header>

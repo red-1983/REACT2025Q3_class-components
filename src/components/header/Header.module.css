@@ -37,3 +37,10 @@
   color: var(--link-active-color);
   border-bottom-color: var(--link-active-color);
 }
+.button_theme {
+  width: 120px;
+  height: 35px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+}
