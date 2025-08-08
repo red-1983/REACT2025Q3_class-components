@@ -2,9 +2,10 @@ import Card from './card/Card';
 import Spinner from '../../components/Spinner/Spinner';
 import Pagination from '../../components/Pagination/Pagination';
 import styles from './ListCards.module.css';
-import { useCallback, useEffect, useState } from 'react';
 import { useCharacterSelectionStore } from '../../stores/useCharacterSelectionStore';
-
+import { useCharacters } from '../../hooks/useCharacters';
+import { useQueryClient } from '@tanstack/react-query';
+import { queryKeys } from '../../const/queryKeys';
 export interface Character {
   id: number;
   name: string;
@@ -35,63 +36,16 @@ const ListCards = ({
   onCharacterClick,
   onPageChange,
 }: ListCardsProps) => {
+  const queryClient = useQueryClient();
   const { selectedCharacters, toggleCharacter, clearSelection } =
     useCharacterSelectionStore();
 
-  const [characters, setCharacters] = useState<Character[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [totalPages, setTotalPages] = useState(1);
-  const [totalCount, setTotalCount] = useState(0);
-  const fetchCharacters = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const baseUrl = 'https://rickandmortyapi.com/api/character';
-      const params = new URLSearchParams({
-        page: currentPage.toString(),
-      });
-      const trimmedSearchTerm = searchTerm.trim();
-
-      if (searchTerm.trim()) {
-        params.append('name', trimmedSearchTerm);
-      }
-
-      const response = await fetch(`${baseUrl}?${params.toString()}`);
-      if (response.ok) {
-        const data: ApiResponse = await response.json();
-        setCharacters(data.results || []);
-        setTotalPages(data.info.pages);
-        setTotalCount(data.info.count);
-      } else if (response.status === 404) {
-        setCharacters([]);
-        setError('Персонажи не найдены. Попробуйте другой поисковый запрос.');
-        setTotalPages(1);
-        setTotalCount(0);
-      } else {
-        setCharacters([]);
-        setError(
-          `Ошибка при загрузке данных: ${response.status} ${response.statusText}`
-        );
-        setTotalPages(1);
-        setTotalCount(0);
-      }
-    } catch (error) {
-      setCharacters([]);
-      setError(
-        `Ошибка сети: ${error instanceof Error ? error.message : 'Неизвестная ошибка'}`
-      );
-      setTotalPages(1);
-      setTotalCount(0);
-    } finally {
-      setLoading(false);
-    }
-  }, [currentPage, searchTerm]);
-
-  useEffect(() => {
-    fetchCharacters();
-  }, [fetchCharacters]);
-
+  const { data, error, isLoading } = useCharacters(currentPage, searchTerm);
+  const handleRefresh = () => {
+    queryClient.invalidateQueries({
+      queryKey: queryKeys.characters.list(currentPage, searchTerm),
+    });
+  };
   const handleSaveCsv = () => {
     if (selectedCharacters.length === 0) return;
 
@@ -127,15 +81,18 @@ const ListCards = ({
     document.body.removeChild(link);
   };
 
-  if (loading) {
+  if (isLoading) {
     return <Spinner />;
   }
   if (error) {
+    const errorMessage = error.message.includes('404')
+      ? 'Персонажи не найдены. Попробуйте другой поисковый запрос.'
+      : `Ошибка сети: ${error.message}`;
     return (
       <div className={styles.errorMessage}>
         <h3>Ошибка</h3>
-        <p>{error}</p>
-        <button onClick={fetchCharacters} className={styles.retryButton}>
+        <p>{errorMessage}</p>
+        <button onClick={handleRefresh} className={styles.retryButton}>
           Попробовать снова
         </button>
       </div>
@@ -143,7 +100,7 @@ const ListCards = ({
   }
   return (
     <div className={styles.resultsSection}>
-      {characters.length === 0 ? (
+      {!data || data.results.length === 0 ? (
         <div className={styles.noResults}>
           <p>Персонажи не найдены</p>
         </div>
@@ -151,12 +108,13 @@ const ListCards = ({
         <>
           <div className={styles.resultsInfo}>
             <p>
-              Найдено {totalCount} персонажей
-              {totalPages > 1 && ` (страница ${currentPage} из ${totalPages})`}
+              Найдено {data.info.count} персонажей
+              {data.info.pages > 1 &&
+                ` (страница ${currentPage} из ${data.info.pages})`}
             </p>
           </div>
           <div className={styles.listCards}>
-            {characters.map((character) => {
+            {data.results.map((character) => {
               const isSelected = selectedCharacters.some(
                 (c) => c.id === character.id
               );
@@ -175,7 +133,7 @@ const ListCards = ({
           </div>
           <Pagination
             currentPage={currentPage}
-            totalPages={totalPages}
+            totalPages={data.info.pages}
             onPageChange={onPageChange}
           />
         </>

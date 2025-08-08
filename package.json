@@ -16,6 +16,7 @@
     "coverage": "vitest run --coverage"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.84.2",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
@@ -26,6 +27,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.13.0",
+    "@tanstack/eslint-plugin-query": "^5.83.1",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.3.3",
