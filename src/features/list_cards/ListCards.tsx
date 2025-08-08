@@ -1,11 +1,11 @@
 import Card from './card/Card';
-import Spinner from '../../components/Spinner/Spinner';
-import Pagination from '../../components/Pagination/Pagination';
+import Spinner from '@/components/Spinner/Spinner';
+import Pagination from '@/components/Pagination/Pagination';
 import styles from './ListCards.module.css';
-import { useCharacterSelectionStore } from '../../stores/useCharacterSelectionStore';
-import { useCharacters } from '../../hooks/useCharacters';
+import { useCharacterSelectionStore } from '@/stores/useCharacterSelectionStore';
+import { useCharacters } from '@/hooks/useCharacters';
 import { useQueryClient } from '@tanstack/react-query';
-import { queryKeys } from '../../const/queryKeys';
+import { queryKeys } from '@/constants/queryKeys';
 export interface Character {
   id: number;
   name: string;

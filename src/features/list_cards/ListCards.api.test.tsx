@@ -1,22 +1,22 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import ListCards from './ListCards';
 import type { ApiResponse } from './ListCards';
 
 vi.mock('./card/Card', () => ({
-  default: ({ name, description }: { name: string; description: string }) => (
+  default: ({ name }: { name: string; description: string }) => (
     <div data-testid="card">
-      <div data-testid="card-name">{name}</div>
-      <div data-testid="card-description">{description}</div>
+      <h3 data-testid="card-name">{name}</h3>
     </div>
   ),
 }));
 
-vi.mock('../../components/Spinner/Spinner', () => ({
+vi.mock('@/components/Spinner/Spinner', () => ({
   default: () => <div data-testid="spinner">Loading...</div>,
 }));
 
-vi.mock('../../components/Pagination/Pagination', () => ({
+vi.mock('@/components/Pagination/Pagination', () => ({
   default: ({
     currentPage,
     totalPages,
@@ -34,9 +34,30 @@ vi.mock('../../components/Pagination/Pagination', () => ({
   ),
 }));
 
+const createTestQueryClient = () =>
+  new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: false,
+      },
+    },
+  });
+
 describe('ListCards API Integration Tests', () => {
   const mockOnPageChange = vi.fn();
+  const mockOnCharacterClick = vi.fn();
   const mockFetch = vi.fn();
+
+  const createWrapper = () => {
+    const testQueryClient = createTestQueryClient();
+    const Wrapper = ({ children }: { children: React.ReactNode }) => (
+      <QueryClientProvider client={testQueryClient}>
+        {children}
+      </QueryClientProvider>
+    );
+    Wrapper.displayName = 'TestQueryClientWrapper';
+    return Wrapper;
+  };
 
   beforeEach(() => {
     globalThis.fetch = mockFetch;
@@ -85,7 +106,9 @@ describe('ListCards API Integration Tests', () => {
           searchTerm=""
           currentPage={1}
           onPageChange={mockOnPageChange}
-        />
+          onCharacterClick={mockOnCharacterClick}
+        />,
+        { wrapper: createWrapper() }
       );
 
       await waitFor(() => {
@@ -106,7 +129,9 @@ describe('ListCards API Integration Tests', () => {
           searchTerm="rick"
           currentPage={1}
           onPageChange={mockOnPageChange}
-        />
+          onCharacterClick={mockOnCharacterClick}
+        />,
+        { wrapper: createWrapper() }
       );
 
       await waitFor(() => {
@@ -127,7 +152,9 @@ describe('ListCards API Integration Tests', () => {
           searchTerm=""
           currentPage={3}
           onPageChange={mockOnPageChange}
-        />
+          onCharacterClick={mockOnCharacterClick}
+        />,
+        { wrapper: createWrapper() }
       );
 
       await waitFor(() => {
@@ -150,18 +177,17 @@ describe('ListCards API Integration Tests', () => {
           searchTerm=""
           currentPage={1}
           onPageChange={mockOnPageChange}
-        />
+          onCharacterClick={mockOnCharacterClick}
+        />,
+        { wrapper: createWrapper() }
       );
-
-      expect(screen.getByTestId('spinner')).toBeInTheDocument();
 
       await waitFor(() => {
         expect(screen.getAllByTestId('card-name')).toHaveLength(2);
+        expect(screen.getByText('Rick Sanchez')).toBeInTheDocument();
+        expect(screen.getByText('Morty Smith')).toBeInTheDocument();
+        expect(screen.getAllByTestId('card')).toHaveLength(2);
       });
-
-      expect(screen.getByText('Rick Sanchez')).toBeInTheDocument();
-      expect(screen.getByText('Morty Smith')).toBeInTheDocument();
-      expect(screen.getAllByTestId('card')).toHaveLength(2);
     });
 
     it('should update component state based on API response', async () => {
@@ -175,7 +201,9 @@ describe('ListCards API Integration Tests', () => {
           searchTerm=""
           currentPage={1}
           onPageChange={mockOnPageChange}
-        />
+          onCharacterClick={mockOnCharacterClick}
+        />,
+        { wrapper: createWrapper() }
       );
 
       await waitFor(() => {
@@ -193,6 +221,7 @@ describe('ListCards API Integration Tests', () => {
         ok: false,
         status: 404,
         statusText: 'Not Found',
+        json: () => Promise.resolve({ error: 'Not Found' }),
       });
 
       render(
@@ -200,7 +229,9 @@ describe('ListCards API Integration Tests', () => {
           searchTerm="nonexistent"
           currentPage={1}
           onPageChange={mockOnPageChange}
-        />
+          onCharacterClick={mockOnCharacterClick}
+        />,
+        { wrapper: createWrapper() }
       );
 
       await waitFor(() => {
@@ -219,7 +250,9 @@ describe('ListCards API Integration Tests', () => {
           searchTerm=""
           currentPage={1}
           onPageChange={mockOnPageChange}
-        />
+          onCharacterClick={mockOnCharacterClick}
+        />,
+        { wrapper: createWrapper() }
       );
 
       await waitFor(() => {
@@ -230,19 +263,21 @@ describe('ListCards API Integration Tests', () => {
     });
 
     it('should handle unknown errors', async () => {
-      mockFetch.mockRejectedValueOnce('Unknown error');
+      mockFetch.mockRejectedValueOnce(new Error('Something went wrong'));
 
       render(
         <ListCards
           searchTerm=""
           currentPage={1}
           onPageChange={mockOnPageChange}
-        />
+          onCharacterClick={mockOnCharacterClick}
+        />,
+        { wrapper: createWrapper() }
       );
 
       await waitFor(() => {
         expect(
-          screen.getByText('Ошибка сети: Неизвестная ошибка')
+          screen.getByText('Ошибка сети: Something went wrong')
         ).toBeInTheDocument();
       });
     });
@@ -262,7 +297,9 @@ describe('ListCards API Integration Tests', () => {
           searchTerm=""
           currentPage={1}
           onPageChange={mockOnPageChange}
-        />
+          onCharacterClick={mockOnCharacterClick}
+        />,
+        { wrapper: createWrapper() }
       );
 
       expect(screen.getByTestId('spinner')).toBeInTheDocument();
@@ -292,11 +329,16 @@ describe('ListCards API Integration Tests', () => {
           searchTerm=""
           currentPage={1}
           onPageChange={mockOnPageChange}
-        />
+          onCharacterClick={mockOnCharacterClick}
+        />,
+        { wrapper: createWrapper() }
       );
 
       await waitFor(() => {
         expect(mockFetch).toHaveBeenCalledTimes(1);
+        expect(mockFetch).toHaveBeenCalledWith(
+          'https://rickandmortyapi.com/api/character?page=1'
+        );
       });
 
       rerender(
@@ -304,6 +346,7 @@ describe('ListCards API Integration Tests', () => {
           searchTerm="rick"
           currentPage={1}
           onPageChange={mockOnPageChange}
+          onCharacterClick={mockOnCharacterClick}
         />
       );
 
