@@ -9,7 +9,7 @@ vi.mock('./card/Card', () => ({
   ),
 }));
 
-vi.mock('@/components/Spinner/Spinner', () => ({
+vi.mock('../components/Spinner/Spinner', () => ({
   default: () => <div data-testid="spinner">Загрузка...</div>,
 }));
 

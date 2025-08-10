@@ -12,11 +12,11 @@ vi.mock('./card/Card', () => ({
   ),
 }));
 
-vi.mock('@/components/Spinner/Spinner', () => ({
+vi.mock('../../components/Spinner/Spinner', () => ({
   default: () => <div data-testid="spinner">Loading...</div>,
 }));
 
-vi.mock('@/components/Pagination/Pagination', () => ({
+vi.mock('../../components/Pagination/Pagination', () => ({
   default: ({
     currentPage,
     totalPages,
