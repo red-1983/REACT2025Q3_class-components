@@ -5,6 +5,7 @@ import styles from './ListCards.module.css';
 import { useCharacterSelectionStore } from '../../stores/useCharacterSelectionStore';
 import { useCharacters } from '../../hooks/useCharacters';
 import { useQueryClient } from '@tanstack/react-query';
+import { HttpError } from '../../api/charactersApi';
 import { queryKeys } from '../../const/queryKeys';
 export interface Character {
   id: number;
@@ -40,7 +41,10 @@ const ListCards = ({
   const { selectedCharacters, toggleCharacter, clearSelection } =
     useCharacterSelectionStore();
 
-  const { data, error, isLoading } = useCharacters(currentPage, searchTerm);
+  const { data, error, isLoading, isFetching } = useCharacters(
+    currentPage,
+    searchTerm
+  );
   const handleRefresh = () => {
     queryClient.invalidateQueries({
       queryKey: queryKeys.characters.list(currentPage, searchTerm),
@@ -85,9 +89,10 @@ const ListCards = ({
     return <Spinner />;
   }
   if (error) {
-    const errorMessage = error.message.includes('404')
-      ? 'Персонажи не найдены. Попробуйте другой поисковый запрос.'
-      : `Ошибка сети: ${error.message}`;
+    const errorMessage =
+      error instanceof HttpError && error.status === 404
+        ? 'Персонажи не найдены. Попробуйте другой поисковый запрос.'
+        : `Ошибка сети: ${error instanceof Error ? error.message : String(error)}`;
     return (
       <div className={styles.errorMessage}>
         <h3>Ошибка</h3>
@@ -100,6 +105,11 @@ const ListCards = ({
   }
   return (
     <div className={styles.resultsSection}>
+      {isFetching && !isLoading && (
+        <div className={styles.refetchingIndicator}>
+          <Spinner />
+        </div>
+      )}
       {!data || data.results.length === 0 ? (
         <div className={styles.noResults}>
           <p>Персонажи не найдены</p>

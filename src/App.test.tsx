@@ -1,6 +1,7 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import App from './App';
 
 vi.mock('./components', async (importOriginal) => {
@@ -63,6 +64,15 @@ vi.mock('./components/ErrorBoundary/ErrorDisplay', () => ({
   default: () => <div data-testid="error-display">Error Display</div>,
 }));
 
+const TestWrapper = ({ children }: { children: React.ReactNode }) => {
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  });
+  return (
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  );
+};
+
 describe('App Component Integration Tests', () => {
   let consoleErrorSpy: ReturnType<typeof vi.spyOn>;
 
@@ -77,9 +87,11 @@ describe('App Component Integration Tests', () => {
   describe('Initial Render', () => {
     it('should render all main components on mount', () => {
       render(
-        <MemoryRouter>
-          <App />
-        </MemoryRouter>
+        <TestWrapper>
+          <MemoryRouter>
+            <App />
+          </MemoryRouter>
+        </TestWrapper>
       );
 
       expect(screen.getByTestId('error-boundary')).toBeInTheDocument();
@@ -92,9 +104,11 @@ describe('App Component Integration Tests', () => {
 
     it('should initialize with empty search term and page 1', () => {
       render(
-        <MemoryRouter>
-          <App />
-        </MemoryRouter>
+        <TestWrapper>
+          <MemoryRouter>
+            <App />
+          </MemoryRouter>
+        </TestWrapper>
       );
 
       expect(screen.getByTestId('search-term')).toHaveTextContent('');
@@ -103,9 +117,11 @@ describe('App Component Integration Tests', () => {
 
     it('should display correct header title', () => {
       render(
-        <MemoryRouter>
-          <App />
-        </MemoryRouter>
+        <TestWrapper>
+          <MemoryRouter>
+            <App />
+          </MemoryRouter>
+        </TestWrapper>
       );
 
       expect(screen.getByTestId('header')).toHaveTextContent(
@@ -117,9 +133,11 @@ describe('App Component Integration Tests', () => {
   describe('Search Functionality', () => {
     it('should update search term when search is performed', async () => {
       render(
-        <MemoryRouter>
-          <App />
-        </MemoryRouter>
+        <TestWrapper>
+          <MemoryRouter>
+            <App />
+          </MemoryRouter>
+        </TestWrapper>
       );
 
       const searchButton = screen.getByRole('button', { name: /search/i });
@@ -134,9 +152,11 @@ describe('App Component Integration Tests', () => {
 
     it('should reset page to 1 when new search is performed', async () => {
       render(
-        <MemoryRouter>
-          <App />
-        </MemoryRouter>
+        <TestWrapper>
+          <MemoryRouter>
+            <App />
+          </MemoryRouter>
+        </TestWrapper>
       );
 
       const nextPageButton = screen.getByRole('button', { name: /next page/i });
@@ -158,9 +178,11 @@ describe('App Component Integration Tests', () => {
   describe('Pagination Functionality', () => {
     it('should update current page when page change is triggered', async () => {
       render(
-        <MemoryRouter>
-          <App />
-        </MemoryRouter>
+        <TestWrapper>
+          <MemoryRouter>
+            <App />
+          </MemoryRouter>
+        </TestWrapper>
       );
 
       const nextPageButton = screen.getByRole('button', { name: /next page/i });
@@ -173,9 +195,11 @@ describe('App Component Integration Tests', () => {
 
     it('should maintain search term when page changes', async () => {
       render(
-        <MemoryRouter>
-          <App />
-        </MemoryRouter>
+        <TestWrapper>
+          <MemoryRouter>
+            <App />
+          </MemoryRouter>
+        </TestWrapper>
       );
 
       const searchButton = screen.getByRole('button', { name: /search/i });
@@ -202,9 +226,11 @@ describe('App Component Integration Tests', () => {
   describe('Error Boundary Testing', () => {
     it('should render error boundary test button', () => {
       render(
-        <MemoryRouter>
-          <App />
-        </MemoryRouter>
+        <TestWrapper>
+          <MemoryRouter>
+            <App />
+          </MemoryRouter>
+        </TestWrapper>
       );
 
       const errorButton = screen.getByRole('button', {
@@ -217,9 +243,11 @@ describe('App Component Integration Tests', () => {
   describe('State Management', () => {
     it('should manage component state correctly', async () => {
       render(
-        <MemoryRouter>
-          <App />
-        </MemoryRouter>
+        <TestWrapper>
+          <MemoryRouter>
+            <App />
+          </MemoryRouter>
+        </TestWrapper>
       );
 
       expect(screen.getByTestId('search-term')).toHaveTextContent('');

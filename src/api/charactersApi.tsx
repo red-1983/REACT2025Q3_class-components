@@ -1,6 +1,21 @@
 import type { ApiResponse } from '../features/list_cards/ListCards';
 
 const API_BASE_URL = 'https://rickandmortyapi.com/api/character';
+
+export class HttpError extends Error {
+  status: number;
+  statusText: string;
+
+  constructor(response: Response) {
+    super(
+      `Network response was not ok: ${response.status} ${response.statusText}`
+    );
+    this.name = 'HttpError';
+    this.status = response.status;
+    this.statusText = response.statusText;
+  }
+}
+
 export const fetchCharacters = async (
   page: number,
   searchTerm: string
@@ -12,9 +27,7 @@ export const fetchCharacters = async (
   const response = await fetch(`${API_BASE_URL}?${params.toString()}`);
 
   if (!response.ok) {
-    throw new Error(
-      `Network response was not ok: ${response.status} ${response.statusText}`
-    );
+    throw new HttpError(response);
   }
 
   return response.json();

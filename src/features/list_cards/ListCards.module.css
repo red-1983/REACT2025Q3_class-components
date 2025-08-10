@@ -113,3 +113,25 @@
     background-color: #007bff;
   }
 }
+
+.refetchingIndicator {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 10;
+}
+
+.refetchingIndicator .spinnerContainer {
+  padding: 0;
+}
+
+.refetchingIndicator .spinner {
+  width: 24px;
+  height: 24px;
+  border-width: 3px;
+  margin-bottom: 0;
+}
+
+.refetchingIndicator p {
+  display: none;
+}

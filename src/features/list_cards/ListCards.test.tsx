@@ -154,7 +154,7 @@ describe('ListCards', () => {
   });
 
   it('should print an error message when an API call fails', async () => {
-    mockFetch.mockRejectedValue(new Error('Network error'));
+    mockFetch.mockRejectedValueOnce(new Error('Network error'));
     render(
       <ListCards
         searchTerm="unknown"

@@ -1,10 +1,12 @@
 import { useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import SearchCards from '../../features/search/SearchCards';
 import ListCards from '../../features/list_cards/ListCards';
 import CharacterDetail from '../CharacterDetail/CharacterDetail';
 import styles from './CharactersPage.module.css';
 import ErrorDisplay from '../ErrorBoundary/ErrorDisplay';
+import { queryKeys } from '../../const/queryKeys';
 const CharactersPage = () => {
   const navigate = useNavigate();
   const { page, characterId } = useParams<{
@@ -12,6 +14,7 @@ const CharactersPage = () => {
     characterId?: string;
   }>();
 
+  const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState(
     () => localStorage.getItem('searchTerm') || ''
   );
@@ -48,6 +51,13 @@ const CharactersPage = () => {
   const handleDetailClose = useCallback(() => {
     navigate(`/${currentPage}`);
   }, [navigate, currentPage]);
+
+  const handleRefresh = useCallback(() => {
+    queryClient.invalidateQueries({
+      queryKey: queryKeys.characters.list(currentPage, searchTerm),
+    });
+  }, [queryClient, currentPage, searchTerm]);
+
   const handleTriggerTestError = () => {
     setTestError('Это тестовая ошибка для проверки UI.');
   };
@@ -57,7 +67,7 @@ const CharactersPage = () => {
   };
   return (
     <div>
-      <SearchCards onSearch={handleSearch} />
+      <SearchCards onSearch={handleSearch} onRefresh={handleRefresh} />
       <div className={styles.testErrorContainer}>
         <button
           onClick={handleTriggerTestError}

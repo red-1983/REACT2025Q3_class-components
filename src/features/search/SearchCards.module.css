@@ -60,3 +60,23 @@
   clip: rect(0 0 0 0);
   overflow: hidden;
 }
+
+.refreshButton {
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  white-space: nowrap;
+}
+
+.refreshButton:hover {
+  background-color: #5a6268;
+}
+
+.refreshButton:active {
+  background-color: #4e555b;
+}

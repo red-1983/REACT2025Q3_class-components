@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import styles from './SearchCards.module.css';
-
 interface SearchCardsProps {
   onSearch: (searchTerm: string) => void;
+  onRefresh: () => void;
 }
 
-const SearchCards = ({ onSearch }: SearchCardsProps) => {
+const SearchCards = ({ onSearch, onRefresh }: SearchCardsProps) => {
   const [inputValue, setInputValue] = useState(
     () => localStorage.getItem('searchTerm') || ''
   );
@@ -25,6 +25,7 @@ const SearchCards = ({ onSearch }: SearchCardsProps) => {
       handleSearchClick();
     }
   };
+
   return (
     <div className={styles.searchSection}>
       <div className={styles.fieldSearch}>
@@ -43,6 +44,9 @@ const SearchCards = ({ onSearch }: SearchCardsProps) => {
         />
         <button onClick={handleSearchClick} className={styles.searchButton}>
           Поиск
+        </button>
+        <button onClick={onRefresh} className={styles.refreshButton}>
+          Обновить
         </button>
       </div>
     </div>

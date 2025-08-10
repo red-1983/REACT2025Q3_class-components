@@ -5,21 +5,26 @@ import { describe, expect, it, vi, beforeEach } from 'vitest';
 
 describe('SearchCards', () => {
   const mockOnSearch = vi.fn<(serchTerm: string) => void>();
+  const mockOnRefresh = vi.fn<() => void>();
 
   beforeEach(() => {
     localStorage.clear();
     vi.clearAllMocks();
+    mockOnRefresh.mockClear();
   });
   it('should render the search input and search button', () => {
-    render(<SearchCards onSearch={mockOnSearch} />);
+    render(<SearchCards onSearch={mockOnSearch} onRefresh={mockOnRefresh} />);
     expect(
       screen.getByPlaceholderText('Поиск персонажей...')
     ).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /поиск/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: /обновить/i })
+    ).toBeInTheDocument();
   });
   it('should call onSearch with the correct term when user searches', async () => {
     const user = userEvent.setup();
-    render(<SearchCards onSearch={mockOnSearch} />);
+    render(<SearchCards onSearch={mockOnSearch} onRefresh={mockOnRefresh} />);
     const input = screen.getByPlaceholderText('Поиск персонажей...');
     const searchButton = screen.getByRole('button', { name: 'Поиск' });
     await user.type(input, 'Rick');
@@ -27,7 +32,7 @@ describe('SearchCards', () => {
     expect(mockOnSearch).toHaveBeenCalledWith('Rick');
   });
   it('should show an empty input when no saved term exists', () => {
-    render(<SearchCards onSearch={mockOnSearch} />);
+    render(<SearchCards onSearch={mockOnSearch} onRefresh={mockOnRefresh} />);
     const input = screen.getByPlaceholderText(
       'Поиск персонажей...'
     ) as HTMLInputElement;
@@ -36,7 +41,7 @@ describe('SearchCards', () => {
   it('should display previously saved search term from localStorage on mount', () => {
     const savedSearchTerm = 'Rick';
     localStorage.setItem('searchTerm', savedSearchTerm);
-    render(<SearchCards onSearch={mockOnSearch} />);
+    render(<SearchCards onSearch={mockOnSearch} onRefresh={mockOnRefresh} />);
     const input = screen.getByPlaceholderText(
       'Поиск персонажей...'
     ) as HTMLInputElement;
@@ -44,7 +49,7 @@ describe('SearchCards', () => {
   });
   it('should update input value when user types', async () => {
     const user = userEvent.setup();
-    render(<SearchCards onSearch={mockOnSearch} />);
+    render(<SearchCards onSearch={mockOnSearch} onRefresh={mockOnRefresh} />);
     const input = screen.getByPlaceholderText(
       'Поиск персонажей...'
     ) as HTMLInputElement;
@@ -53,7 +58,7 @@ describe('SearchCards', () => {
   });
   it('should save search term to localStorage when search button is clicked', async () => {
     const user = userEvent.setup();
-    render(<SearchCards onSearch={mockOnSearch} />);
+    render(<SearchCards onSearch={mockOnSearch} onRefresh={mockOnRefresh} />);
     const input = screen.getByPlaceholderText(
       'Поиск персонажей...'
     ) as HTMLInputElement;
@@ -64,7 +69,7 @@ describe('SearchCards', () => {
   });
   it('should remove spaces from search query before saving', async () => {
     const user = userEvent.setup();
-    render(<SearchCards onSearch={mockOnSearch} />);
+    render(<SearchCards onSearch={mockOnSearch} onRefresh={mockOnRefresh} />);
     const input = screen.getByPlaceholderText(
       'Поиск персонажей...'
     ) as HTMLInputElement;
@@ -75,7 +80,7 @@ describe('SearchCards', () => {
   });
   it('should trigger search callback with correct parameters', async () => {
     const user = userEvent.setup();
-    render(<SearchCards onSearch={mockOnSearch} />);
+    render(<SearchCards onSearch={mockOnSearch} onRefresh={mockOnRefresh} />);
     const input = screen.getByPlaceholderText('Поиск персонажей...');
     const searchButton = screen.getByRole('button', { name: 'Поиск' });
     await user.type(input, 'Rick');
@@ -86,7 +91,7 @@ describe('SearchCards', () => {
   it('should overwrite existing localStorage value when a new search is performed', async () => {
     localStorage.setItem('searchTerm', 'Rick');
     const user = userEvent.setup();
-    render(<SearchCards onSearch={mockOnSearch} />);
+    render(<SearchCards onSearch={mockOnSearch} onRefresh={mockOnRefresh} />);
     const input = screen.getByPlaceholderText(
       'Поиск персонажей...'
     ) as HTMLInputElement;
@@ -99,7 +104,7 @@ describe('SearchCards', () => {
   });
   it('should trigger search when Enter key is pressed', async () => {
     const user = userEvent.setup();
-    render(<SearchCards onSearch={mockOnSearch} />);
+    render(<SearchCards onSearch={mockOnSearch} onRefresh={mockOnRefresh} />);
     const input = screen.getByPlaceholderText(
       'Поиск персонажей...'
     ) as HTMLInputElement;
@@ -107,5 +112,12 @@ describe('SearchCards', () => {
     await user.keyboard('{Enter}');
     expect(mockOnSearch).toHaveBeenCalledWith('Morty');
     expect(localStorage.getItem('searchTerm')).toBe('Morty');
+  });
+  it('should call onRefresh when refresh button is clicked', async () => {
+    const user = userEvent.setup();
+    render(<SearchCards onSearch={mockOnSearch} onRefresh={mockOnRefresh} />);
+    const refreshButton = screen.getByRole('button', { name: /обновить/i });
+    await user.click(refreshButton);
+    expect(mockOnRefresh).toHaveBeenCalledTimes(1);
   });
 });
